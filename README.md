@@ -1,2 +1,2 @@
 # pqerror
-PostgreSQL error codes as constants
+PostgreSQL error codes exposed as Go constants.
