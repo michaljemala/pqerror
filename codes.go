@@ -4,7 +4,7 @@ package pqerror
 import "github.com/lib/pq"
 
 // See https://www.postgresql.org/docs/9.6/static/errcodes-appendix.html.
-const PqVersion = 9.6
+const PqVersion = 11
 
 func ErrorDetails(e *pq.Error) map[string]interface{} {
 	return map[string]interface{}{
