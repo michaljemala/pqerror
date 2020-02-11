@@ -1,22 +1,23 @@
-// pqerror package exposes PostgreSQL error codes as constants.
+// pqerror package exposes PostgreSQL error codes as constants and provides
+// helpers to inspect PostgreSQL errors.
 package pqerror
 
 import "github.com/lib/pq"
 
-// See https://www.postgresql.org/docs/9.6/static/errcodes-appendix.html.
-const PqVersion = 11
+// See https://www.postgresql.org/docs/11/static/errcodes-appendix.html
+// and https://github.com/postgres/postgres/blob/REL_12_STABLE/src/backend/utils/errcodes.txt.
+const PqVersion = 12
 
-func ErrorDetails(e *pq.Error) map[string]interface{} {
-	return map[string]interface{}{
-		"code":       e.Code,
-		"codeName":   e.Code.Name(),
-		"column":     e.Column,
-		"constraint": e.Constraint,
-		"detail":     e.Detail,
-		"hint":       e.Hint,
-		"schema":     e.Schema,
-		"table":      e.Table,
-	}
+// IsClass reports whether an error is of type *pq.Error and has a given class.
+func IsClass(err error, class pq.ErrorClass) bool {
+	pqerr, ok := err.(*pq.Error)
+	return ok && pqerr.Code.Class() == class
+}
+
+// IsCode reports whether an error is of type *pq.Error and has a given code.
+func IsCode(err error, code pq.ErrorCode) bool {
+	pqerr, ok := err.(*pq.Error)
+	return ok && pqerr.Code == code
 }
 
 const (
@@ -177,6 +178,21 @@ const (
 	InvalidXmlContent                     = pq.ErrorCode("2200N")
 	InvalidXmlComment                     = pq.ErrorCode("2200S")
 	InvalidXmlProcessingInstruction       = pq.ErrorCode("2200T")
+	DuplicateJsonObjectKeyValue           = pq.ErrorCode("22030")
+	InvalidJsonText                       = pq.ErrorCode("22032")
+	InvalidJsonSubscript                  = pq.ErrorCode("22033")
+	MoreThanOneJsonItem                   = pq.ErrorCode("22034")
+	NoJsonItem                            = pq.ErrorCode("22035")
+	NonNumericJsonItem                    = pq.ErrorCode("22036")
+	NonUniqueKeysInJsonObject             = pq.ErrorCode("22037")
+	SingletonJsonItemRequired             = pq.ErrorCode("22038")
+	JsonArrayNotFound                     = pq.ErrorCode("22039")
+	JsonMemberNotFound                    = pq.ErrorCode("2203A")
+	JsonNumberNotFound                    = pq.ErrorCode("2203B")
+	JsonObjectNotFound                    = pq.ErrorCode("2203C")
+	JsonScalarRequired                    = pq.ErrorCode("2203F")
+	TooManyJsonArrayElements              = pq.ErrorCode("2203D")
+	TooManyJsonObjectMembers              = pq.ErrorCode("2203E")
 
 	// Class 23 - Integrity Constraint Violation
 	IntegrityConstraintViolation = pq.ErrorCode("23000")
@@ -329,6 +345,7 @@ const (
 	ObjectInUse                  = pq.ErrorCode("55006")
 	CantChangeRuntimeParam       = pq.ErrorCode("55P02")
 	LockNotAvailable             = pq.ErrorCode("55P03")
+	UnsafeNewEnumValueUsage      = pq.ErrorCode("55P04")
 
 	// Class 57 - Operator Intervention
 	OperatorIntervention = pq.ErrorCode("57000")
